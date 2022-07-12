@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  MealsViewController.swift
 //  Recipe
 //
 //  Created by Mettaworldj on 7/12/22.
@@ -7,9 +7,9 @@
 
 import UIKit
 
-class MainViewController: UIViewController {
+class MealsViewController: UIViewController {
     
-    let mainView = MainView()
+    let mainView = MealsView()
     var dataSource: UICollectionViewDiffableDataSource<Section, Meal>?
     var mealList: [Meal] = .init()
     var selectedIndexPath: IndexPath?
@@ -30,7 +30,7 @@ class MainViewController: UIViewController {
         setupCollectionView()
         getMeals()
     }
-
+    
     fileprivate func getMeals() {
         let mealRequest = MealsRequest(apiKey: "1", category: "Dessert")
         DefaultNetworkService().request(mealRequest) { [weak self] result in
@@ -49,14 +49,8 @@ class MainViewController: UIViewController {
         self.mainView.collectionView.delegate = self
         
         let registration = UICollectionView.CellRegistration<MealItem, Meal> { cell, indexPath, meal in
-//            if let url = URL(string: meal.strMealThumb),
-//               let data = try? Data(contentsOf: url),
-//               let image = UIImage(data: data) {
-//                content.image = image.resizeImage(targetSize: .init(width: 30, height: 30))
-//                content.imageProperties.cornerRadius = 10
-//            }
-            
-            cell.contentConfiguration = cell.configure(with: meal)
+            let content = cell.configure(with: meal)
+            cell.contentConfiguration = content
             cell.accessories = [.disclosureIndicator()]
         }
         
@@ -84,10 +78,10 @@ class MainViewController: UIViewController {
         snapshot.appendItems(mealList)
         dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
-
+    
 }
 
-extension MainViewController: UICollectionViewDelegate {
+extension MealsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let vc = UIViewController()
         vc.view.backgroundColor = .systemGroupedBackground
@@ -96,7 +90,7 @@ extension MainViewController: UICollectionViewDelegate {
     }
 }
 
-extension MainViewController: UISearchResultsUpdating {
+extension MealsViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text, !searchText.isEmpty else {
             return self.applySnapshot()
@@ -107,8 +101,12 @@ extension MainViewController: UISearchResultsUpdating {
     }
 }
 
-extension MainViewController {
+extension MealsViewController {
     enum Section {
         case main
     }
 }
+
+
+
+
