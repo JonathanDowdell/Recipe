@@ -10,9 +10,9 @@ import UIKit
 class RecipeView: UIView {
     
     lazy var collectionView: UICollectionView = {
-        let configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        configuration.headerMode = UICollectionLayoutListConfiguration.HeaderMode.supplementary
         let layout = UICollectionViewCompositionalLayout.list(using: configuration)
-        
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemGroupedBackground
@@ -30,9 +30,7 @@ class RecipeView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setup() {
-        self.backgroundColor = .red
-    }
+    func setup() {}
     
     func setupSubviews() {
         self.addSubview(collectionView)

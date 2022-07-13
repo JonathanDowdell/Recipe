@@ -33,10 +33,3 @@ struct Recipe: Decodable {
 
 extension Recipe: Hashable {}
 
-struct Ingredient: Decodable {
-    let ingredient: String
-    let measurement: String
-}
-
-extension Ingredient: Hashable {}
-

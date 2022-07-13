@@ -96,7 +96,6 @@ extension MealsViewController: UICollectionViewDelegate {
         }
         
         let vc = RecipeViewController(meal: mealList[indexPath.item])
-        vc.view.backgroundColor = .systemGroupedBackground
         self.navigationController?.pushViewController(vc, animated: true)
         selectedIndexPath = indexPath
     }

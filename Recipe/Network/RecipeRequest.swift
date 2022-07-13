@@ -55,6 +55,6 @@ struct RecipeRequest: DataRequest {
             
             index += 1
         } while (keepGoing)
-        return ingredients
+        return Set(ingredients).map { $0 }.sorted { $0.ingredient < $1.measurement }
     }
 }
