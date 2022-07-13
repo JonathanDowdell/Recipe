@@ -25,12 +25,15 @@
 		24A99B7E287DCA58004B5BAC /* DataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A99B7D287DCA58004B5BAC /* DataRequest.swift */; };
 		24A99B80287DCA8B004B5BAC /* NetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A99B7F287DCA8B004B5BAC /* NetworkProtocol.swift */; };
 		24A99B82287DCB25004B5BAC /* MealsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A99B81287DCB25004B5BAC /* MealsRequest.swift */; };
-		24A99B84287DCC95004B5BAC /* Meals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A99B83287DCC95004B5BAC /* Meals.swift */; };
 		24FFBB09287DF01D00CD1CAC /* UIImage+etx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB08287DF01D00CD1CAC /* UIImage+etx.swift */; };
-		24FFBB0B287DF07500CD1CAC /* MealItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB0A287DF07500CD1CAC /* MealItem.swift */; };
+		24FFBB0B287DF07500CD1CAC /* MealsViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB0A287DF07500CD1CAC /* MealsViewItem.swift */; };
 		24FFBB1C287DFCED00CD1CAC /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 24FFBB1B287DFCED00CD1CAC /* Kingfisher */; };
 		24FFBB1E287E0B0D00CD1CAC /* UIImageView+etx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB1D287E0B0D00CD1CAC /* UIImageView+etx.swift */; };
 		24FFBB20287E0BF900CD1CAC /* UITableView+etx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB1F287E0BF900CD1CAC /* UITableView+etx.swift */; };
+		24FFBB22287E290100CD1CAC /* RecipeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB21287E290100CD1CAC /* RecipeView.swift */; };
+		24FFBB24287E291600CD1CAC /* RecipeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB23287E291600CD1CAC /* RecipeViewController.swift */; };
+		24FFBB26287E2ABC00CD1CAC /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB25287E2ABC00CD1CAC /* Recipe.swift */; };
+		24FFBB28287E2CD600CD1CAC /* RecipeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFBB27287E2CD600CD1CAC /* RecipeRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,11 +76,14 @@
 		24A99B7D287DCA58004B5BAC /* DataRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRequest.swift; sourceTree = "<group>"; };
 		24A99B7F287DCA8B004B5BAC /* NetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProtocol.swift; sourceTree = "<group>"; };
 		24A99B81287DCB25004B5BAC /* MealsRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsRequest.swift; sourceTree = "<group>"; };
-		24A99B83287DCC95004B5BAC /* Meals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meals.swift; sourceTree = "<group>"; };
 		24FFBB08287DF01D00CD1CAC /* UIImage+etx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+etx.swift"; sourceTree = "<group>"; };
-		24FFBB0A287DF07500CD1CAC /* MealItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealItem.swift; sourceTree = "<group>"; };
+		24FFBB0A287DF07500CD1CAC /* MealsViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealsViewItem.swift; sourceTree = "<group>"; };
 		24FFBB1D287E0B0D00CD1CAC /* UIImageView+etx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+etx.swift"; sourceTree = "<group>"; };
 		24FFBB1F287E0BF900CD1CAC /* UITableView+etx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+etx.swift"; sourceTree = "<group>"; };
+		24FFBB21287E290100CD1CAC /* RecipeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeView.swift; sourceTree = "<group>"; };
+		24FFBB23287E291600CD1CAC /* RecipeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeViewController.swift; sourceTree = "<group>"; };
+		24FFBB25287E2ABC00CD1CAC /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
+		24FFBB27287E2CD600CD1CAC /* RecipeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				24A99B3F287DB14C004B5BAC /* MealsViewController.swift */,
+				24FFBB23287E291600CD1CAC /* RecipeViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -174,7 +181,8 @@
 			isa = PBXGroup;
 			children = (
 				24A99B6E287DB326004B5BAC /* MealsView.swift */,
-				24FFBB0A287DF07500CD1CAC /* MealItem.swift */,
+				24FFBB0A287DF07500CD1CAC /* MealsViewItem.swift */,
+				24FFBB21287E290100CD1CAC /* RecipeView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -182,8 +190,8 @@
 		24A99B72287DB400004B5BAC /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				24A99B83287DCC95004B5BAC /* Meals.swift */,
 				24A99B76287DCA07004B5BAC /* Meal.swift */,
+				24FFBB25287E2ABC00CD1CAC /* Recipe.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -194,6 +202,7 @@
 				24A99B7B287DCA46004B5BAC /* HTTPMethod.swift */,
 				24A99B7D287DCA58004B5BAC /* DataRequest.swift */,
 				24A99B81287DCB25004B5BAC /* MealsRequest.swift */,
+				24FFBB27287E2CD600CD1CAC /* RecipeRequest.swift */,
 				24A99B79287DCA3A004B5BAC /* ErrorResponse.swift */,
 				24A99B7F287DCA8B004B5BAC /* NetworkProtocol.swift */,
 				24A99B74287DB4C2004B5BAC /* DefaultNetworkService.swift */,
@@ -348,6 +357,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24FFBB24287E291600CD1CAC /* RecipeViewController.swift in Sources */,
+				24FFBB22287E290100CD1CAC /* RecipeView.swift in Sources */,
+				24FFBB28287E2CD600CD1CAC /* RecipeRequest.swift in Sources */,
 				24A99B82287DCB25004B5BAC /* MealsRequest.swift in Sources */,
 				24A99B40287DB14C004B5BAC /* MealsViewController.swift in Sources */,
 				24A99B7E287DCA58004B5BAC /* DataRequest.swift in Sources */,
@@ -358,13 +370,13 @@
 				24A99B6F287DB326004B5BAC /* MealsView.swift in Sources */,
 				24FFBB1E287E0B0D00CD1CAC /* UIImageView+etx.swift in Sources */,
 				24FFBB20287E0BF900CD1CAC /* UITableView+etx.swift in Sources */,
-				24A99B84287DCC95004B5BAC /* Meals.swift in Sources */,
 				24A99B7C287DCA46004B5BAC /* HTTPMethod.swift in Sources */,
 				24A99B75287DB4C2004B5BAC /* DefaultNetworkService.swift in Sources */,
 				24A99B80287DCA8B004B5BAC /* NetworkProtocol.swift in Sources */,
-				24FFBB0B287DF07500CD1CAC /* MealItem.swift in Sources */,
+				24FFBB0B287DF07500CD1CAC /* MealsViewItem.swift in Sources */,
 				24A99B46287DB14C004B5BAC /* Recipe.xcdatamodeld in Sources */,
 				24A99B7A287DCA3A004B5BAC /* ErrorResponse.swift in Sources */,
+				24FFBB26287E2ABC00CD1CAC /* Recipe.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,17 +9,19 @@ import UIKit
 
 class MealsViewController: UIViewController {
     
-    let mainView = MealsView()
-    var dataSource: UICollectionViewDiffableDataSource<Section, Meal>?
-    var mealList: [Meal] = .init()
-    var selectedIndexPath: IndexPath?
-    lazy var searchBar = UISearchBar(frame: .zero)
+    private let mealsView = MealsView()
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Meal>?
+    private var mealList: [Meal] = .init()
+    private var selectedIndexPath: IndexPath?
+    private lazy var searchBar = UISearchBar(frame: .zero)
     
     override func loadView() {
-        self.view = mainView
+        super.loadView()
+        self.view = mealsView
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         deselectItem()
     }
     
@@ -38,7 +40,9 @@ class MealsViewController: UIViewController {
             case .success(let response):
                 let meals = response.meals.sorted { $0.strMeal < $1.strMeal }
                 self?.mealList = meals
-                self?.applySnapshot(with: meals)
+                DispatchQueue.main.async {
+                    self?.applySnapshot(with: meals)
+                }
             case .failure(let error):
                 print(error)
             }
@@ -46,22 +50,23 @@ class MealsViewController: UIViewController {
     }
     
     fileprivate func setupCollectionView() {
-        self.mainView.collectionView.delegate = self
+        self.mealsView.collectionView.delegate = self
         
-        let registration = UICollectionView.CellRegistration<MealItem, Meal> { cell, indexPath, meal in
+        let registration = UICollectionView.CellRegistration<MealsViewItem, Meal> { cell, indexPath, meal in
             let content = cell.configure(with: meal)
             cell.contentConfiguration = content
             cell.accessories = [.disclosureIndicator()]
         }
         
-        dataSource = UICollectionViewDiffableDataSource<Section, Meal>(collectionView: mainView.collectionView) { cv, indexPath, meal in
+        dataSource = UICollectionViewDiffableDataSource<Section, Meal>(collectionView: mealsView.collectionView) {
+            cv, indexPath, meal in
             return cv.dequeueConfiguredReusableCell(using: registration, for: indexPath, item: meal)
         }
     }
     
     fileprivate func deselectItem() {
         if let selectedIndexPath = selectedIndexPath {
-            mainView.collectionView.deselectItem(at: selectedIndexPath, animated: true)
+            mealsView.collectionView.deselectItem(at: selectedIndexPath, animated: true)
         }
     }
     
@@ -69,21 +74,28 @@ class MealsViewController: UIViewController {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Meal>()
         snapshot.appendSections([.main])
         snapshot.appendItems(meals)
-        dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+        self.dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
     fileprivate func applySnapshot(animatingDifferences: Bool = true) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Meal>()
         snapshot.appendSections([.main])
-        snapshot.appendItems(mealList)
-        dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
+        snapshot.appendItems(self.mealList)
+        self.dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
 }
 
 extension MealsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = UIViewController()
+        var mealList: [Meal]
+        if let searchText = self.navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
+            mealList = self.mealList.filter { $0.strMeal.localizedCaseInsensitiveContains(searchText) }
+        } else {
+            mealList = self.mealList
+        }
+        
+        let vc = RecipeViewController(meal: mealList[indexPath.item])
         vc.view.backgroundColor = .systemGroupedBackground
         self.navigationController?.pushViewController(vc, animated: true)
         selectedIndexPath = indexPath

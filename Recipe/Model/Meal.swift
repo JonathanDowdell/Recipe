@@ -7,6 +7,12 @@
 
 import Foundation
 
+struct MealsWrapper: Codable {
+    var meals: [Meal]
+}
+
+extension MealsWrapper: Hashable {}
+
 struct Meal: Codable {
     var strMeal: String
     var strMealThumb: String

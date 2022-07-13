@@ -29,6 +29,6 @@ struct MealsRequest: DataRequest {
     
     var encoder: JSONEncoder = .init()
     
-    typealias Response = Meals
+    typealias Response = MealsWrapper
     
 }

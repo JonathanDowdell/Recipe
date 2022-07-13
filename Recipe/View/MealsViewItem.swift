@@ -1,5 +1,5 @@
 //
-//  MealItem.swift
+//  MealsViewItem.swift
 //  Recipe
 //
 //  Created by Mettaworldj on 7/12/22.
@@ -8,7 +8,7 @@
 import UIKit
 import Kingfisher
 
-class MealItem: UICollectionViewListCell {
+class MealsViewItem: UICollectionViewListCell {
     
     let imageView = UIImageView(image: UIImage.emptyImage(with: .zero))
     
