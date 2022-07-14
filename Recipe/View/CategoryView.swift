@@ -16,6 +16,7 @@ class CategoryView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemGroupedBackground
+        collectionView.keyboardDismissMode = .onDrag
         
         return collectionView
     }()
