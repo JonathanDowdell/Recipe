@@ -148,6 +148,7 @@ class CategoryViewController: UIViewController {
     @objc func reload(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text, !searchText.isEmpty else {
             self.meals = .init()
+            self.filteredCategories = .init()
             return self.applySnapshot()
         }
         
@@ -186,6 +187,7 @@ extension CategoryViewController: UISearchResultsUpdating, UISearchBarDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text, !searchText.isEmpty else {
             self.meals = .init()
+            self.filteredCategories = .init()
             return self.applySnapshot()
         }
 
@@ -198,8 +200,9 @@ extension CategoryViewController: UISearchResultsUpdating, UISearchBarDelegate {
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-//        print("Restore")
-//        self.applySnapshot()
+        self.meals = .init()
+        self.filteredCategories = .init()
+        self.applySnapshot()
     }
 }
 
