@@ -10,7 +10,9 @@ import UIKit
 class MealsViewController: UIViewController {
     
     var meals: [Meal] = .init()
+    var filteredMeals: [Meal] = .init()
     
+    private let catgory: String
     private let mainView = MealsView()
     private var selectedIndexPath: IndexPath?
     private var searchBar = UISearchBar(frame: .zero)
@@ -18,7 +20,11 @@ class MealsViewController: UIViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Section, Meal>?
     private var network: NetworkProtocol
     
-    init(network: NetworkProtocol = DefaultNetworkService.shared) {
+    init(
+        category: String,
+        network: NetworkProtocol = DefaultNetworkService.shared
+    ) {
+        self.catgory = category
         self.network = network
         super.init(nibName: nil, bundle: nil)
     }
@@ -45,11 +51,11 @@ class MealsViewController: UIViewController {
     }
     
     fileprivate func getMeals() {
-        let mealRequest = MealsRequest(apiKey: "1", category: "Dessert")
+        let mealRequest = MealsRequest(apiKey: "1", category: self.catgory)
         Task {
-            let meals = try await network.request(mealRequest).meals.sorted { $0.strMeal < $1.strMeal }
+            let meals = try await network.request(mealRequest).meals?.sorted { $0.strMeal < $1.strMeal }
             await MainActor.run {
-                self.meals = meals
+                self.meals = meals ?? .init()
                 self.applySnapshot(with: self.meals)
             }
         }
@@ -58,9 +64,12 @@ class MealsViewController: UIViewController {
     fileprivate func setupSearchBar() {
         self.navigationItem.searchController = UISearchController()
         self.navigationItem.searchController?.searchResultsUpdater = self
+        self.navigationItem.searchController?.searchBar.delegate = self
+        self.navigationItem.searchController?.searchBar.placeholder = "Search name or id"
     }
     
     fileprivate func setupCollectionView() {
+        self.title = catgory
         self.mainView.collectionView.delegate = self
         
         let registration = UICollectionView.CellRegistration<MealsViewItem, Meal> { cell, indexPath, meal in
@@ -97,11 +106,11 @@ class MealsViewController: UIViewController {
     
 }
 
-extension MealsViewController: UICollectionViewDelegate {
+extension MealsViewController: UICollectionViewDelegate, UISearchBarDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var mealList: [Meal]
         if let searchText = self.navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
-            mealList = self.meals.filter { $0.strMeal.localizedCaseInsensitiveContains(searchText) }
+            mealList = self.filteredMeals
         } else {
             mealList = self.meals
         }
@@ -110,16 +119,23 @@ extension MealsViewController: UICollectionViewDelegate {
         self.navigationController?.pushViewController(vc, animated: true)
         selectedIndexPath = indexPath
     }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.filteredMeals = .init()
+    }
 }
 
 extension MealsViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text, !searchText.isEmpty else {
+            self.filteredMeals = .init()
             return self.applySnapshot()
         }
         
-        let filtered = self.meals.filter { $0.strMeal.localizedCaseInsensitiveContains(searchText) }
-        self.applySnapshot(with: filtered)
+        self.filteredMeals = self.meals.filter {
+            $0.strMeal.localizedCaseInsensitiveContains(searchText) || $0.idMeal.contains(searchText)
+        }
+        self.applySnapshot(with: self.filteredMeals)
     }
 }
 

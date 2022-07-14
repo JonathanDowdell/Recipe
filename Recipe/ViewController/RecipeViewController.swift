@@ -41,6 +41,7 @@ class RecipeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = meal.strMeal
+        self.navigationController?.title = meal.strMeal
         setupCollectionView()
         getRecipe()
     }

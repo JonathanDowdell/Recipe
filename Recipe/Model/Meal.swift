@@ -8,7 +8,7 @@
 import Foundation
 
 struct MealsWrapper: Codable {
-    var meals: [Meal]
+    var meals: [Meal]?
 }
 
 extension MealsWrapper: Hashable {}
