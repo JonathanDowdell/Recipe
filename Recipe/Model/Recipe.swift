@@ -28,7 +28,7 @@ struct Recipe: Decodable {
     var strImageSource: String?
     var strCreativeCommonsConfirmed: String?
     var ingredients: [Ingredient]? = .init()
-    // var dateModified: String?
+    var dateModified: String?
 }
 
 extension Recipe: Hashable {}

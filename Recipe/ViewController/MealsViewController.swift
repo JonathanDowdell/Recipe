@@ -27,6 +27,7 @@ class MealsViewController: UIViewController {
         self.catgory = category
         self.network = network
         super.init(nibName: nil, bundle: nil)
+        self.title = category
     }
     
     required init?(coder: NSCoder) {

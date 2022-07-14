@@ -206,11 +206,6 @@ extension CategoryViewController: UISearchResultsUpdating, UISearchBarDelegate {
     }
 }
 
-struct RandomObject {
-    let filteredCategories: [Category]
-    let searchString: String
-}
-
 extension CategoryViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.selectedIndexPath = indexPath

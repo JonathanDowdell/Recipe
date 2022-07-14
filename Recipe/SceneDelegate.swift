@@ -17,7 +17,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         
         let viewController = CategoryViewController()
-        viewController.title = "Categories"
         
         let navigationViewController = UINavigationController(rootViewController: viewController)
         navigationViewController.navigationBar.prefersLargeTitles = true

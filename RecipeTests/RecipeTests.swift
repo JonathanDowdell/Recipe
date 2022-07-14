@@ -14,12 +14,17 @@ extension RecipeTests {
     
     static let staticRecipe = Recipe(idMeal: "52894", strMeal: "", strDrinkAlternate: "", strCategory: "", strArea: "", strInstructions: "", strMealThumb: "", strTags: "", strYoutube: "", strSource: "", strImageSource: "", strCreativeCommonsConfirmed: "", ingredients: .init())
     
+    static let staticCategory = Category(idCategory: "1", strCategory: "Beef", strCategoryThumb: "", strCategoryDescription: "")
+    
     class MockNetwork: NetworkProtocol {
         func request<Request>(_ request: Request) async throws -> Request.Response where Request : DataRequest {
+            
             if let _ = request as? MealsRequest {
                 return MealsWrapper(meals: [staticMeal]) as! Request.Response
             } else if let _ = request as? RecipeRequest {
                 return RecipeWrapper(meals: [staticRecipe], data: Data()) as! Request.Response
+            } else if let _ = request as? CategoryRequest {
+                return CategoryWrapper(categories: [staticCategory]) as! Request.Response
             }
             return MealsWrapper(meals: [staticMeal]) as! Request.Response
         }
@@ -33,8 +38,17 @@ extension RecipeTests {
 
 class RecipeTests: XCTestCase {
     
+    func testCategoryViewController() async {
+        let categoryViewController = await CategoryViewController(network: MockNetwork())
+        await categoryViewController.viewDidLoad()
+        let hasCategories = await categoryViewController.categories.count > 0
+        XCTAssertTrue(hasCategories)
+    }
+    
     func testMealsViewController() async {
-        let mealViewController = await MealsViewController(network: MockNetwork())
+        let mealViewController = await MealsViewController(category: "Dessert", network: MockNetwork())
+        let vcTitle = await mealViewController.title
+        XCTAssertEqual(vcTitle, "Dessert")
         await mealViewController.viewDidLoad()
         let loadedMeals = await mealViewController.meals
         let mealsNotEmpty = !loadedMeals.isEmpty
