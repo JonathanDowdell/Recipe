@@ -9,17 +9,23 @@ import UIKit
 
 class RecipeViewController: UIViewController {
     
-    private let recipeView = RecipeView()
+    let meal: Meal
+    var recipe: Recipe?
+    
+    private let mainView = RecipeView()
     private var dataSource: UICollectionViewDiffableDataSource<Section, AnyHashable>?
-    private let meal: Meal
-    private var recipe: Recipe?
+    private let network: NetworkProtocol
     
     private var ingredients: [Ingredient] {
         return (recipe?.ingredients ?? .init()).sorted { $0.ingredient < $1.ingredient }
     }
     
-    init(meal: Meal) {
+    init(
+        meal: Meal,
+        network: NetworkProtocol = DefaultNetworkService.shared
+    ) {
         self.meal = meal
+        self.network = network
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -29,32 +35,29 @@ class RecipeViewController: UIViewController {
     
     override func loadView() {
         super.loadView()
-        self.view = recipeView
+        self.view = mainView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.title = meal.strMeal
         setupCollectionView()
         getRecipe()
     }
     
-    private func getRecipe() {
+    fileprivate func getRecipe() {
         let recipeRequest = RecipeRequest(apiKey: "1", recipeId: meal.idMeal)
-        DefaultNetworkService().request(recipeRequest) { result in
-            switch result {
-            case .success(let response):
-                self.recipe = response.meals?.first
+        Task {
+            let recipe = (try await network.request(recipeRequest).meals ?? .init()).first
+            await MainActor.run {
+                self.recipe = recipe
                 self.applySnapshot()
-            case .failure(let error):
-                print(error)
             }
         }
     }
     
     fileprivate func setupCollectionView() {
-        self.recipeView.collectionView.delegate = self
+        self.mainView.collectionView.delegate = self
         
         let imageRegistration = UICollectionView.CellRegistration<RecipeImageItem, Meal> {
             cell, indexPath, meal in
@@ -74,9 +77,7 @@ class RecipeViewController: UIViewController {
             cell.contentConfiguration = content
         }
         
-        let blankHeaderRegistration = UICollectionView.SupplementaryRegistration<UICollectionReusableView>(elementKind: UICollectionView.elementKindSectionHeader) { supplementaryView, string, indexPath in
-            
-        }
+        let blankHeaderRegistration = UICollectionView.SupplementaryRegistration<UICollectionReusableView>(elementKind: UICollectionView.elementKindSectionHeader) { supplementaryView, string, indexPath in }
         
         let instructionHeaderRegistration = UICollectionView.SupplementaryRegistration<RecipeSectionHeader>(elementKind: UICollectionView.elementKindSectionHeader) { supplementaryView, string, indexPath in
             supplementaryView.titleLabel.text = "Instructions"
@@ -86,7 +87,7 @@ class RecipeViewController: UIViewController {
             supplementaryView.titleLabel.text = "Ingredients"
         }
         
-        dataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>(collectionView: recipeView.collectionView) {
+        dataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>(collectionView: mainView.collectionView) {
             collectionView, indexPath, item in
             
             switch Section(rawValue: indexPath.section) {
@@ -102,16 +103,16 @@ class RecipeViewController: UIViewController {
         dataSource?.supplementaryViewProvider = { supplementaryView, elementKind, indexPath in
             switch Section(rawValue: indexPath.section) {
             case .image:
-                return self.recipeView.collectionView.dequeueConfiguredReusableSupplementary(using: blankHeaderRegistration, for: indexPath)
+                return self.mainView.collectionView.dequeueConfiguredReusableSupplementary(using: blankHeaderRegistration, for: indexPath)
             case .instruction:
-                return self.recipeView.collectionView.dequeueConfiguredReusableSupplementary(using: instructionHeaderRegistration, for: indexPath)
+                return self.mainView.collectionView.dequeueConfiguredReusableSupplementary(using: instructionHeaderRegistration, for: indexPath)
             case .ingredient:
-                return self.recipeView.collectionView.dequeueConfiguredReusableSupplementary(using: ingredientsHeaderRegistration, for: indexPath)
+                return self.mainView.collectionView.dequeueConfiguredReusableSupplementary(using: ingredientsHeaderRegistration, for: indexPath)
             }
         }
     }
     
-    func applySnapshot(animatingDifferences: Bool = true) {
+    fileprivate func applySnapshot(animatingDifferences: Bool = true) {
         if let recipe = recipe {
             var snapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>()
             snapshot.appendSections([.image, .instruction, .ingredient])
@@ -125,7 +126,6 @@ class RecipeViewController: UIViewController {
                     snapshot.appendItems(ingredients, toSection: .ingredient)
                 }
             }
-
             self.dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
         }
     }
@@ -158,7 +158,6 @@ extension RecipeViewController {
         case image
         case instruction
         case ingredient
-//        case footer
         
         init(rawValue: Int) {
             switch rawValue {

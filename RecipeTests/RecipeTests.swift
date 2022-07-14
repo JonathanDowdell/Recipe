@@ -8,29 +8,48 @@
 import XCTest
 @testable import Recipe
 
-class RecipeTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+extension RecipeTests {
+    
+    static let staticMeal = Meal(strMeal: "Battenberg Cake", strMealThumb: "https://www.themealdb.com/images/media/meals/ywwrsp1511720277.jpg", idMeal: "52894")
+    
+    static let staticRecipe = Recipe(idMeal: "52894", strMeal: "", strDrinkAlternate: "", strCategory: "", strArea: "", strInstructions: "", strMealThumb: "", strTags: "", strYoutube: "", strSource: "", strImageSource: "", strCreativeCommonsConfirmed: "", ingredients: .init())
+    
+    class MockNetwork: NetworkProtocol {
+        func request<Request>(_ request: Request) async throws -> Request.Response where Request : DataRequest {
+            if let _ = request as? MealsRequest {
+                return MealsWrapper(meals: [staticMeal]) as! Request.Response
+            } else if let _ = request as? RecipeRequest {
+                return RecipeWrapper(meals: [staticRecipe], data: Data()) as! Request.Response
+            }
+            return MealsWrapper(meals: [staticMeal]) as! Request.Response
         }
+        
+        func request<Request>(_ request: Request, completion: @escaping (Result<Request.Response, Error>) -> Void) where Request : DataRequest {
+            completion(.success(MealsWrapper(meals: [staticMeal]) as! Request.Response))
+        }
+    }
+    
+}
+
+class RecipeTests: XCTestCase {
+    
+    func testMealsViewController() async {
+        let mealViewController = await MealsViewController(network: MockNetwork())
+        await mealViewController.viewDidLoad()
+        let loadedMeals = await mealViewController.meals
+        let mealsNotEmpty = !loadedMeals.isEmpty
+        XCTAssert(mealsNotEmpty, "Has Content")
+    }
+    
+    func testRecipeViewController() async {
+        let recipeViewController = await RecipeViewController(meal: RecipeTests.staticMeal, network: MockNetwork())
+        let innerId = await recipeViewController.meal.idMeal
+        let outterId = RecipeTests.staticMeal.idMeal
+        XCTAssertEqual(innerId, outterId, "Inner Id does not match Outter Id")
+        
+        await recipeViewController.viewDidLoad()
+        let loadedRecipe = await recipeViewController.recipe
+        XCTAssertNotNil(loadedRecipe, "RecipeViewController didn't load Recipe")
     }
 
 }

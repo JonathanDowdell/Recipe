@@ -8,5 +8,6 @@
 import Foundation
 
 protocol NetworkProtocol {
+    func request<Request: DataRequest>(_ request: Request) async throws -> Request.Response
     func request<Request: DataRequest>(_ request: Request, completion: @escaping (Result<Request.Response, Error>) -> Void)
 }

@@ -9,15 +9,27 @@ import UIKit
 
 class MealsViewController: UIViewController {
     
-    private let mealsView = MealsView()
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Meal>?
-    private var mealList: [Meal] = .init()
+    var meals: [Meal] = .init()
+    
+    private let mainView = MealsView()
     private var selectedIndexPath: IndexPath?
-    private lazy var searchBar = UISearchBar(frame: .zero)
+    private var searchBar = UISearchBar(frame: .zero)
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Meal>?
+    private var network: NetworkProtocol
+    
+    init(network: NetworkProtocol = DefaultNetworkService.shared) {
+        self.network = network
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         super.loadView()
-        self.view = mealsView
+        self.view = mainView
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -27,30 +39,29 @@ class MealsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.searchController = UISearchController()
-        self.navigationItem.searchController?.searchResultsUpdater = self
+        setupSearchBar()
         setupCollectionView()
         getMeals()
     }
     
     fileprivate func getMeals() {
         let mealRequest = MealsRequest(apiKey: "1", category: "Dessert")
-        DefaultNetworkService().request(mealRequest) { [weak self] result in
-            switch result {
-            case .success(let response):
-                let meals = response.meals.sorted { $0.strMeal < $1.strMeal }
-                self?.mealList = meals
-                DispatchQueue.main.async {
-                    self?.applySnapshot(with: meals)
-                }
-            case .failure(let error):
-                print(error)
+        Task {
+            let meals = try await network.request(mealRequest).meals.sorted { $0.strMeal < $1.strMeal }
+            await MainActor.run {
+                self.meals = meals
+                self.applySnapshot(with: self.meals)
             }
         }
     }
     
+    fileprivate func setupSearchBar() {
+        self.navigationItem.searchController = UISearchController()
+        self.navigationItem.searchController?.searchResultsUpdater = self
+    }
+    
     fileprivate func setupCollectionView() {
-        self.mealsView.collectionView.delegate = self
+        self.mainView.collectionView.delegate = self
         
         let registration = UICollectionView.CellRegistration<MealsViewItem, Meal> { cell, indexPath, meal in
             let content = cell.configure(with: meal)
@@ -58,7 +69,7 @@ class MealsViewController: UIViewController {
             cell.accessories = [.disclosureIndicator()]
         }
         
-        dataSource = UICollectionViewDiffableDataSource<Section, Meal>(collectionView: mealsView.collectionView) {
+        dataSource = UICollectionViewDiffableDataSource<Section, Meal>(collectionView: mainView.collectionView) {
             cv, indexPath, meal in
             return cv.dequeueConfiguredReusableCell(using: registration, for: indexPath, item: meal)
         }
@@ -66,7 +77,7 @@ class MealsViewController: UIViewController {
     
     fileprivate func deselectItem() {
         if let selectedIndexPath = selectedIndexPath {
-            mealsView.collectionView.deselectItem(at: selectedIndexPath, animated: true)
+            mainView.collectionView.deselectItem(at: selectedIndexPath, animated: true)
         }
     }
     
@@ -80,7 +91,7 @@ class MealsViewController: UIViewController {
     fileprivate func applySnapshot(animatingDifferences: Bool = true) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Meal>()
         snapshot.appendSections([.main])
-        snapshot.appendItems(self.mealList)
+        snapshot.appendItems(self.meals)
         self.dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
@@ -90,9 +101,9 @@ extension MealsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var mealList: [Meal]
         if let searchText = self.navigationItem.searchController?.searchBar.text, !searchText.isEmpty {
-            mealList = self.mealList.filter { $0.strMeal.localizedCaseInsensitiveContains(searchText) }
+            mealList = self.meals.filter { $0.strMeal.localizedCaseInsensitiveContains(searchText) }
         } else {
-            mealList = self.mealList
+            mealList = self.meals
         }
         
         let vc = RecipeViewController(meal: mealList[indexPath.item])
@@ -107,7 +118,7 @@ extension MealsViewController: UISearchResultsUpdating {
             return self.applySnapshot()
         }
         
-        let filtered = self.mealList.filter { $0.strMeal.localizedCaseInsensitiveContains(searchText) }
+        let filtered = self.meals.filter { $0.strMeal.localizedCaseInsensitiveContains(searchText) }
         self.applySnapshot(with: filtered)
     }
 }

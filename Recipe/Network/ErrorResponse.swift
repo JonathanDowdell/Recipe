@@ -9,4 +9,6 @@ import Foundation
 
 enum ErrorResponse: String {
     case invalidEndpoint
+    case invalidStatusCode
+    case invalidResponse
 }
